@@ -10,4 +10,5 @@ public interface ITagService
 	boolean CreateTag( Tag tag,  User loggedInUser );
     List<Tag> GetAllTags();
     List<Tag> GetTagsForTask( Task task );
+    List<Tag> GetTagsForUser( User user );
 }

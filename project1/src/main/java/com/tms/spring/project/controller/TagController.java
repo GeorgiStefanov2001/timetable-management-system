@@ -42,7 +42,7 @@ public class TagController
 		boolean isTagCreatedSuccessfully = false;
 		try
 		{
-			isTagCreatedSuccessfully = tagService.CreateTag(tag);
+			isTagCreatedSuccessfully = tagService.CreateTag(tag, HomeController.loggedInUser);
 		}
 		catch( Exception exception ) 
 		{ 

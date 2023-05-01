@@ -41,25 +41,6 @@ public class TaskRepository
 			result.next();
 			long taskId = result.getLong( 1 );
 
-			// boolean isTagsTasksLinkedCorrectly = true;
-			// for(var tag: tags){
-			// 	statement = dbConn.prepareStatement( "INSERT INTO tasks_tags (task_id, tag_id) VALUES(?, ?) RETURNING task_id, tag_id" );
-			// 	statement.setLong( 1, taskId );
-			// 	statement.setLong( 2, tag.getId() );
-
-			// 	result = statement.executeQuery();
-			// 	result.next();
-			// 	long taskIdInMMTable = result.getLong(1); 
-			// 	long tagIdInMMTable = result.getLong(2);
-
-			// 	isTagsTasksLinkedCorrectly = (taskIdInMMTable == taskId && tagIdInMMTable == tag.getId());
-
-			// 	if(!isTagsTasksLinkedCorrectly) break;
-				
-			// }
-		
-
-			// if( taskId > 0 && isTagsTasksLinkedCorrectly)
 			if(taskId > 0)
 			{
 				isTaskCreatedSuccessfully = true;

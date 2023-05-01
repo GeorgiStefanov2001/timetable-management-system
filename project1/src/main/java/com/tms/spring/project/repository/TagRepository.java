@@ -134,4 +134,89 @@ public class TagRepository
 	
 		return tags;
 	}
+
+    public List<Tag> GetTagsForUser(long userId)
+	{
+		List<Tag> tags = null;
+        Tag tmpTag = null;
+		PreparedStatement statement = null;
+		ResultSet result = null;
+		Connection dbConn = DataBaseManager.ConnectToDatabase();
+		
+		try
+		{
+			statement = dbConn.prepareStatement( "SELECT id, name, user_id FROM tags WHERE user_id = ?" );
+
+			statement.setLong( 1, userId );
+			
+			result = statement.executeQuery();
+			tags = new ArrayList<Tag>();
+
+			while( result.next() )
+			{
+				tmpTag = new Tag();
+				tmpTag.setId( result.getLong( 1 ) );
+				tmpTag.setName( result.getString( 2 ) );
+                tmpTag.setUserId( result.getLong(3) );
+
+				tags.add( tmpTag );
+			}
+		}
+		catch( Exception exception )
+		{
+			exception.printStackTrace();
+		}
+		finally
+		{
+			DataBaseManager.CloseConnection( dbConn, result, ( Statement ) statement );
+		}
+	
+		return tags;
+	}
+
+    public boolean AttachTagToTask( Tag tag, long taskId )
+	{
+		boolean isTagAttachedSuccessfully = false;
+		PreparedStatement statement = null;
+		Statement transactionStatement = null;
+		ResultSet result = null;
+		Connection dbConn = DataBaseManager.ConnectToDatabase();
+		
+		try
+		{
+			transactionStatement = dbConn.createStatement();
+			transactionStatement.executeUpdate( "BEGIN" );
+
+			statement = dbConn.prepareStatement( "INSERT INTO tasks_tags (task_id, tag_id) VALUES(?, ?) RETURNING task_id, tag_id" );
+            statement.setLong( 1, taskId );
+            statement.setLong( 2, tag.getId() );
+
+            result = statement.executeQuery();
+            result.next();
+            long taskIdInMMTable = result.getLong(1); 
+            long tagIdInMMTable = result.getLong(2);
+
+
+			if( taskIdInMMTable == taskId && tagIdInMMTable == tag.getId() )
+			{
+				isTagAttachedSuccessfully = true;
+				transactionStatement.executeUpdate( "COMMIT" );
+			}
+			else
+			{
+				isTagAttachedSuccessfully = false;
+				transactionStatement.executeUpdate( "ROLLBACK" );
+			}
+		}
+		catch( Exception exception )
+		{
+			exception.printStackTrace();
+		}
+		finally
+		{
+			DataBaseManager.CloseConnection( dbConn, result, ( Statement ) statement, transactionStatement );
+		}
+
+		return isTagAttachedSuccessfully;
+	}
 }
